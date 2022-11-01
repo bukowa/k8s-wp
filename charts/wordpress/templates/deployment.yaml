@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{.Release.Name}}"
+spec:
+  selector:
+    matchLabels:
+      app: {{.Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ .Values.database.config | sha256sum }}
+        checksum/user.ini: {{ .Values.wordpress.user_ini| sha256sum }}
+        checksum/mpm.prefork.conf: {{ .Values.wordpress.mpm_prefork_conf| sha256sum }}
+      labels:
+        app: {{.Release.Name }}
+    spec:
+      volumes:
+
+        - name: "html"
+          hostPath:
+            path: /data/volumes/
+
+        - name: "userini"
+          configMap:
+            name: "{{ .Release.Name }}-database"
+            items:
+              - key: user_ini
+                path: user.ini
+
+        - name: "mpmpreforkconf"
+          configMap:
+            name: "{{ .Release.Name }}-database"
+            items:
+              - key: mpm_prefork_conf
+                path: mpm_prefork.conf
+
+        - name: "database-config"
+          configMap:
+            name: "{{ .Release.Name }}-database"
+            items:
+              - key: mysql_cnf
+                path: docker.cnf
+
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames:
+            - mysql
+
+      containers:
+
+        - name: wordpress
+          image: {{ .Values.image.wordpress }}
+          ports:
+            - containerPort: 80
+              name: "wordpress"
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: mysql
+            - name: WORDPRESS_DEBUG
+              value: "1"
+          envFrom:
+            - secretRef:
+                name: "{{.Release.Name}}-database"
+          volumeMounts:
+
+            - mountPath: /var/www/html
+              name: "html"
+              subPath: {{.Release.Name}}/var/www/html
+
+            - mountPath: /usr/local/etc/php/conf.d/user.ini
+              name: "userini"
+              subPath: user.ini
+
+            - mountPath: /etc/apache2/mods-enabled/mpm_prefork.conf
+              name: "mpmpreforkconf"
+              subPath: mpm_prefork.conf
+
+        - name: database
+          image: {{ .Values.image.mariadb }}
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MARIADB_ROOT_HOST
+              value: mysql
+
+          envFrom:
+            - secretRef:
+                name: "{{.Release.Name}}-database"
+
+          volumeMounts:
+
+            - mountPath: /var/lib/mysql/
+              name: "html"
+              subPath: {{.Release.Name}}/var/lib/mysql/
+
+            - mountPath: /etc/mysql/conf.d/docker.cnf
+              name: "database-config"
+              subPath: docker.cnf
+
