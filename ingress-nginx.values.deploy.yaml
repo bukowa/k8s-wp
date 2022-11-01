@@ -1,0 +1,13 @@
+controller:
+
+  hostPort:
+    enabled: true
+    ports:
+      http: 80
+      https: 443
+
+  extraArgs:
+    watch-ingress-without-class: true
+
+  config:
+    proxy-body-size: 5000m
