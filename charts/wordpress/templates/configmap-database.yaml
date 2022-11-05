@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: "{{ .Release.Name }}-database"
-data:
-  mysql_cnf: {{ toYaml .Values.database.config | indent 2 }}
-  user_ini: {{ toYaml .Values.wordpress.user_ini | indent 2 }}
-  mpm_prefork_conf: {{ toYaml .Values.wordpress.mpm_prefork_conf | indent 2 }}

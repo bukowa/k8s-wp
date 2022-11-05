@@ -1,3 +1,16 @@
+{{- define "file.volumes" }}
+            {{- range .Values.files }}
+            {{- $file := . }}
+            {{- $volumes := get $file.containers $.Container }}
+            {{- if $volumes }}
+            {{ range $volumes }}
+            - mountPath: "{{ .mountPath }}"
+              name: {{ $file.name }}
+              subPath: {{ $file.name }}
+            {{- end}}
+            {{- end}}
+            {{- end}}
+{{- end }}
 {{/*
 Expand the name of the chart.
 */}}
