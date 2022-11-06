@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ .Release.Name }}-files"
+  name: "{{ include "wordpress.fullname" . }}-files"
 data:
-  {{- range .Values.files }}
-  {{.name}}: {{ toYaml .content | indent 2}}
+  {{- range $key, $value := .Values.files }}
+  {{ $key }}: {{ toYaml $value.content | indent 2}}
   {{end}}

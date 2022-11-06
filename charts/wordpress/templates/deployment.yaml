@@ -1,19 +1,20 @@
+{{ $glob := . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{.Release.Name}}"
+  name: "{{ include "wordpress.fullname" . }}-dpl"
 spec:
   selector:
     matchLabels:
-      app: {{.Release.Name }}
+      app: "{{ include "wordpress.fullname" . }}"
   template:
     metadata:
       annotations:
-{{/*        checksum/config: {{ .Values.database.config | sha256sum }}*/}}
-{{/*        checksum/user.ini: {{ .Values.wordpress.user_ini| sha256sum }}*/}}
-{{/*        checksum/mpm.prefork.conf: {{ .Values.wordpress.mpm_prefork_conf| sha256sum }}*/}}
+        checksum/files: {{ join "," .Values.files | sha256sum }}
+        checksum/plugins: {{ join "," .Values.plugins | sha256sum }}
+        checksum/themes: {{ join "," .Values.themes | sha256sum }}
       labels:
-        app: {{.Release.Name }}
+        app: "{{ include "wordpress.fullname" . }}"
     spec:
 
       volumes:
@@ -28,14 +29,14 @@ spec:
         - name: "themes"
           emptyDir: {}
 
-        {{ range .Values.files }}
-        - name: {{ .name }}
+        {{ range $key, $value := .Values.files }}
+        - name: {{ $key }}
           configMap:
-            name: {{ $.Release.Name }}-files
-            defaultMode: {{ default "0555" .mode }}
+            name: {{ include "wordpress.fullname" $glob }}-files
+            defaultMode: {{ default "0444" $value.filemode }}
             items:
-              - key: {{ .name }}
-                path: {{ .name }}
+              - key: {{ $key }}
+                path: {{ $key }}
         {{ end }}
 
       hostAliases:
@@ -94,12 +95,12 @@ spec:
               value: "1"
           envFrom:
             - secretRef:
-                name: "{{.Release.Name}}-database"
+                name: "{{ include "wordpress.fullname" . }}-database"
 
           volumeMounts:
             - mountPath: /var/www/html
               name: "html"
-              subPath: {{.Release.Name}}/var/www/html
+              subPath: {{ include "wordpress.fullname" . }}/var/www/html
 
             {{- template "file.volumes" (dict "Values" .Values "Container" "wordpress") }}
 
@@ -116,12 +117,12 @@ spec:
 
           envFrom:
             - secretRef:
-                name: "{{.Release.Name}}-database"
+                name: "{{ include "wordpress.fullname" . }}-database"
 
           volumeMounts:
             - mountPath: /var/lib/mysql/
               name: "html"
-              subPath: {{.Release.Name}}/var/lib/mysql/
+              subPath: {{ include "wordpress.fullname" . }}/var/lib/mysql/
 
             {{- template "file.volumes" (dict "Values" .Values "Container" "database") }}
 
@@ -155,15 +156,15 @@ spec:
           volumeMounts:
             - mountPath: /var/www/html
               name: "html"
-              subPath: {{.Release.Name}}/var/www/html
+              subPath: {{ include "wordpress.fullname" . }}/var/www/html
 
             {{- template "file.volumes" (dict "Values" .Values "Container" "cli") }}
 
           envFrom:
             - secretRef:
-                name: {{.Release.Name}}-wordpress
+                name: {{ include "wordpress.fullname" . }}-wordpress
             - secretRef:
-                name: {{.Release.Name}}-database
+                name: {{ include "wordpress.fullname" . }}-database
 
     {{/*  ▒█▀▀▀█ ▒█▀▀▀ ▀▀█▀▀ ▒█▀▀█*/}}
     {{/*  ░▀▀▀▄▄ ▒█▀▀▀ ░▒█░░ ▒█▄▄█*/}}
@@ -178,7 +179,7 @@ spec:
           volumeMounts:
             - mountPath: "/home/{{.Values.ftp.login}}/html"
               name: "html"
-              subPath: {{.Release.Name}}/var/www/html
+              subPath: {{ include "wordpress.fullname" . }}/var/www/html
           args:
             - {{.Values.ftp.login}}:{{.Values.ftp.password}}:33
         {{ end }}

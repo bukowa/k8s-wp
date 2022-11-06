@@ -11,6 +11,8 @@ plugins:
   - woocommerce
   - bbpress
 
+themes:
+
 # scripts executed only if WordPress is not installed
 wordpress_init:
   - wp plugin delete hello || true
@@ -24,51 +26,30 @@ wordpress_init:
 wordpress_start:
   - /scripts/wordpress-install.sh
 
-
 database:
   user: "example"
   password: "example"
   name: "example"
   rootPassword: "example"
-  config: |
-    [mysqld]
-    # default_authentication_plugin=mysql_native_password
-    skip-host-cache
-    skip-name-resolve
 
-    # copied for  testing from https://dba.stackexchange.com/questions/64055/how-to-reduce-mysql-memory-used
+# each file ownership is set to root:root
+# unless securityContext; runAsGroup and runAsUser is used
+# from docs;
+# By default, Kubernetes recursively changes ownership and permissions
+# for the contents of each volume to match the fsGroup specified in a
+# Pod's securityContext when that volume is mounted.
 
-    innodb_buffer_pool_size=5M
-    innodb_log_buffer_size=256K
-    query_cache_size=0
-    max_connections=10
-    key_buffer_size=8
-    thread_cache_size=0
-    host_cache_size=0
-    innodb_ft_cache_size=1600000
-    innodb_ft_total_cache_size=32000000
+# for reff
+# https://github.com/kubernetes/kubernetes/issues/81089
+# https://stackoverflow.com/questions/49945437/changing-default-file-owner-and-group-owner-of-kubernetes-secrets-files-mounted
 
-    # per thread or per operation settings
-    # this crashes mariadb
-    #thread_stack=131072
-    sort_buffer_size=32K
-    read_buffer_size=8200
-    read_rnd_buffer_size=8200
-    max_heap_table_size=16K
-    tmp_table_size=1K
-    bulk_insert_buffer_size=0
-    join_buffer_size=128
-    net_buffer_length=1K
-    innodb_sort_buffer_size=64K
-
-    #settings that relate to the binary log (if enabled)
-    binlog_cache_size=4K
-    binlog_stmt_cache_size=4K
-
+# using dict instead of list allows us to override each entry
 files:
 
+  # name of the Volume & data key in ConfigMap
+  # name of this key doesn't matter other than providing unique name
   user-ini:
-    name: user-ini
+    filemode: "0444"
     content: |
         upload_max_filesize = 5000M
         post_max_size = 5000M
@@ -76,25 +57,24 @@ files:
         memory_limit = 128M
     containers:
       wordpress:
-        - mountPath: /usr/local/etc/php/conf.d/user.ini
+        - mountPath: "/usr/local/etc/php/conf.d/user.ini"
 
   mpm-prefork:
-    name: mpm-prefork
+    filemode: "0444"
     containers:
       wordpress:
-        - mountPath: /etc/apache2/mods-enabled/mpm_prefork.conf
+        - mountPath: "/etc/apache2/mods-enabled/mpm_prefork.conf"
     content: |
       <IfModule mpm_prefork_module>
-      StartServers		6
+      StartServers		2
       MinSpareServers	2
-      MaxSpareServers	6
-      MaxRequestWorkers	64
-      MaxConnectionsPerChild  16
+      MaxSpareServers	4
+      MaxRequestWorkers	16
+      MaxConnectionsPerChild  2
       </IfModule>
 
-
   docker-cnf:
-    name: docker-cnf
+    filemode: "0444"
     containers:
       database:
         - mountPath: /etc/mysql/conf.d/docker.cnf
@@ -135,7 +115,7 @@ files:
 
 
   wp-install:
-    name: wp-install
+    filemode: "0555"
     containers:
       cli:
         - mountPath: /scripts/wordpress-install.sh
@@ -172,7 +152,7 @@ files:
 
 
   wait-for-entrypoint:
-    name: wait-for-entrypoint
+    filemode: "0555"
     containers:
       cli:
         - mountPath: /scripts/wait-for-entrypoint.sh

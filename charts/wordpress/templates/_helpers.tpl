@@ -1,12 +1,12 @@
 {{- define "file.volumes" }}
-            {{- range .Values.files }}
+            {{- range $key, $value := .Values.files }}
             {{- $file := . }}
             {{- $volumes := get $file.containers $.Container }}
             {{- if $volumes }}
             {{ range $volumes }}
             - mountPath: "{{ .mountPath }}"
-              name: {{ $file.name }}
-              subPath: {{ $file.name }}
+              name: {{ $key }}
+              subPath: {{ $key }}
             {{- end}}
             {{- end}}
             {{- end}}
