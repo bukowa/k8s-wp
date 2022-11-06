@@ -1,4 +1,3 @@
-{{ $glob := . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,8 +17,8 @@ spec:
     spec:
 
       volumes:
-        {{- include "volumes" $glob }}
-        {{- include "volumes.files" $glob }}
+        {{- include "volumes" . }}
+        {{- include "volumes.files" . }}
 
       hostAliases:
         - ip: "127.0.0.1"
@@ -39,10 +38,9 @@ spec:
           args:
             - set -eux && chown -R 1588:1588 /repos/themes /repos/plugins
           volumeMounts:
-            - mountPath: /repos/themes
-              name: "themes"
-            - mountPath: /repos/plugins
-              name: "plugins"
+            {{ template "volumeMounts" (dict "Values" .Values "Container" "chownrepos" "Context" . )}}
+            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "chownrepos") }}
+
 
       {{/*  ▒█▀▀█ ▀█▀ ▀▀█▀▀ ▒█▀▀█ ▒█░░░ ▒█▀▀▀█ ▒█▄░▒█ ▒█▀▀▀ ▒█▀▀█*/}}
       {{/*  ▒█░▄▄ ▒█░ ░▒█░░ ▒█░░░ ▒█░░░ ▒█░░▒█ ▒█▒█▒█ ▒█▀▀▀ ▒█▄▄▀*/}}
@@ -54,10 +52,9 @@ spec:
             runAsUser: 1588
           imagePullPolicy: Always
           volumeMounts:
-            - mountPath: /repos/themes
-              name: "themes"
-            - mountPath: /repos/plugins
-              name: "plugins"
+            {{ template "volumeMounts" (dict "Values" .Values "Container" "gitcloner" "Context" . )}}
+            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "gitcloner") }}
+
           args:
             - https://gitlab.com/bukowa/gitcloner-repotest-submodule
 
@@ -78,9 +75,8 @@ spec:
           envFrom:
             - secretRef:
                 name: "{{ include "wordpress.fullname" . }}-database"
-
           volumeMounts:
-            {{ template "volumeMounts" (dict "Values" .Values "Container" "wordpress") }}
+            {{ template "volumeMounts" (dict "Values" .Values "Container" "wordpress" "Context" . )}}
             {{- template "volumeMounts.files" (dict "Values" .Values "Container" "wordpress") }}
 
 
@@ -100,10 +96,7 @@ spec:
                 name: "{{ include "wordpress.fullname" . }}-database"
 
           volumeMounts:
-            - mountPath: /var/lib/mysql/
-              name: "html"
-              subPath: {{ include "wordpress.fullname" . }}/var/lib/mysql/
-
+            {{ template "volumeMounts" (dict "Values" .Values "Container" "database" "Context" . )}}
             {{- template "volumeMounts.files" (dict "Values" .Values "Container" "database") }}
 
       {{/*  ▒█░░▒█ ▒█▀▀█ ▒█▀▀█ ▒█░░░ ▀█▀*/}}
@@ -135,13 +128,9 @@ spec:
               {{ range .Values.plugins }} wp plugin install --activate {{.}} &&
               {{- end }} sleep infinity
 
-{{/*          volumeMounts:*/}}
-{{/*            - mountPath: /var/www/html*/}}
-{{/*              name: "html"*/}}
-{{/*              subPath: {{ include "wordpress.fullname" . }}/var/www/html*/}}
-{{/*          */}}
+
           volumeMounts:
-            {{- template "volumeMounts" (dict "Values" .Values "Container" "cli") }}
+            {{- template "volumeMounts" (dict "Values" .Values "Container" "cli" "Context" . )}}
             {{- template "volumeMounts.files" (dict "Values" .Values "Container" "cli") }}
 
           envFrom:
@@ -161,9 +150,8 @@ spec:
             - containerPort: 22
               name: "sftp"
           volumeMounts:
-            - mountPath: "/home/{{.Values.ftp.login}}/html"
-              name: "html"
-              subPath: {{ include "wordpress.fullname" . }}/var/www/html
+            {{- template "volumeMounts" (dict "Values" .Values "Container" "sftp" "Context" . )}}
+            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "sftp") }}
           args:
             - {{.Values.ftp.login}}:{{.Values.ftp.password}}:33
         {{ end }}

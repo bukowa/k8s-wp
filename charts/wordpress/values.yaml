@@ -44,10 +44,13 @@ volumeMounts:
   html:
     wordpress:
       mountPath: /var/www/html
-      subPath: "{{ tpl .Values.database.user}}"
+      subPath: '{{ include "wordpress.fullname" . }}/var/www/html'
     cli:
       mountPath: /var/www/html
-      subPath: "{{ tpl .Values.database.user}}"
+      subPath: '{{ include "wordpress.fullname" . }}/var/www/html'
+    database:
+      mountPath: /var/lib/mysql
+      subPath: '{{ include "wordpress.fullname" . }}/var/lib/mysql'
 
   themes:
     chownrepos:
@@ -80,7 +83,6 @@ database:
 
 # using dict instead of list allows us to override each entry
 files:
-
   # name of the Volume & data key in ConfigMap
   # name of this key doesn't matter other than providing unique name
   user-ini:
@@ -156,7 +158,7 @@ files:
     content: |
       #!/bin/bash
       CURRENT_DOMAIN=$(wp option get siteurl)
-
+      echo "Checking if $CURRENT_DOMAIN should be changed to $WORDPRESS_URL"
       if ! [[ ${CURRENT_DOMAIN} == "${WORDPRESS_URL}" ]]; then
           echo "Replacing ${CURRENT_DOMAIN} with ${WORDPRESS_URL} in database..."
           wp search-replace "${CURRENT_DOMAIN}" "${WORDPRESS_URL}"

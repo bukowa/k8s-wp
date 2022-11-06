@@ -30,21 +30,23 @@
             {{- $volumes := get $file.containers $.Container }}
             {{- if $volumes }}
             {{ range $volumes }}
-            - mountPath: "{{ .mountPath }}"
-              name: {{ $key }}
-              subPath: {{ $key }}
+            {{- $volume := set . "name" $key }}
+            {{- $volume = set . "subPath" (default $key .subPath)}}
+            {{- $volumes := append list $volume }}
+            {{- toYaml $volumes | nindent 12 }}
             {{- end}}
             {{- end}}
             {{- end}}
 {{- end }}
 
 {{- define "volumeMounts" }}
+
             {{- range $volumeName, $volumeContainers := $.Values.volumeMounts }}
             {{- range $container, $volumeSpec := $volumeContainers }}
             {{- if eq $container $.Container }}
             {{- $volume := set $volumeSpec "name" $volumeName }}
             {{- $volumes := append list $volume }}
-                {{- toYaml $volumes | nindent 12 }}
+                {{- tpl (toYaml $volumes ) $.Context | nindent 12}}
             {{- end}}
             {{- end}}
             {{- end}}
