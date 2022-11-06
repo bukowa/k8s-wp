@@ -24,7 +24,7 @@
         {{ end }}
 {{- end}}
 
-{{- define "file.volumes" }}
+{{- define "volumeMounts.files" }}
             {{- range $key, $value := .Values.files }}
             {{- $file := . }}
             {{- $volumes := get $file.containers $.Container }}
@@ -37,6 +37,18 @@
             {{- end}}
             {{- end}}
 {{- end }}
+
+{{- define "volumeMounts" }}
+            {{- range $volumeName, $volumeContainers := $.Values.volumeMounts }}
+            {{- range $container, $volumeSpec := $volumeContainers }}
+            {{- if eq $container $.Container }}
+            {{- $volume := set $volumeSpec "name" $volumeName }}
+            {{- $volumes := append list $volume }}
+                {{- toYaml $volumes | nindent 12 }}
+            {{- end}}
+            {{- end}}
+            {{- end}}
+{{- end}}
 {{/*
 Expand the name of the chart.
 */}}

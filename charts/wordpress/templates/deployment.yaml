@@ -80,11 +80,9 @@ spec:
                 name: "{{ include "wordpress.fullname" . }}-database"
 
           volumeMounts:
-            - mountPath: /var/www/html
-              name: "html"
-              subPath: {{ include "wordpress.fullname" . }}/var/www/html
+            {{ template "volumeMounts" (dict "Values" .Values "Container" "wordpress") }}
+            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "wordpress") }}
 
-            {{- template "file.volumes" (dict "Values" .Values "Container" "wordpress") }}
 
       {{/*  ▒█▀▀▄ ░█▀▀█ ▀▀█▀▀ ░█▀▀█ ▒█▀▀█ ░█▀▀█ ▒█▀▀▀█ ▒█▀▀▀*/}}
       {{/*  ▒█░▒█ ▒█▄▄█ ░▒█░░ ▒█▄▄█ ▒█▀▀▄ ▒█▄▄█ ░▀▀▀▄▄ ▒█▀▀▀*/}}
@@ -106,7 +104,7 @@ spec:
               name: "html"
               subPath: {{ include "wordpress.fullname" . }}/var/lib/mysql/
 
-            {{- template "file.volumes" (dict "Values" .Values "Container" "database") }}
+            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "database") }}
 
       {{/*  ▒█░░▒█ ▒█▀▀█ ▒█▀▀█ ▒█░░░ ▀█▀*/}}
       {{/*  ▒█▒█▒█ ▒█▄▄█ ▒█░░░ ▒█░░░ ▒█░*/}}
@@ -137,12 +135,14 @@ spec:
               {{ range .Values.plugins }} wp plugin install --activate {{.}} &&
               {{- end }} sleep infinity
 
+{{/*          volumeMounts:*/}}
+{{/*            - mountPath: /var/www/html*/}}
+{{/*              name: "html"*/}}
+{{/*              subPath: {{ include "wordpress.fullname" . }}/var/www/html*/}}
+{{/*          */}}
           volumeMounts:
-            - mountPath: /var/www/html
-              name: "html"
-              subPath: {{ include "wordpress.fullname" . }}/var/www/html
-
-            {{- template "file.volumes" (dict "Values" .Values "Container" "cli") }}
+            {{- template "volumeMounts" (dict "Values" .Values "Container" "cli") }}
+            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "cli") }}
 
           envFrom:
             - secretRef:

@@ -39,6 +39,28 @@ volumes:
   themes:
     emptyDir: {}
 
+volumeMounts:
+
+  html:
+    wordpress:
+      mountPath: /var/www/html
+      subPath: "{{ tpl .Values.database.user}}"
+    cli:
+      mountPath: /var/www/html
+      subPath: "{{ tpl .Values.database.user}}"
+
+  themes:
+    chownrepos:
+      mountPath: /repos/themes
+    gitcloner:
+      mountPath: /repos/themes
+
+  plugins:
+    chownrepos:
+      mountPath: /repos/plugins
+    gitcloner:
+      mountPath: /repos/plugins
+
 database:
   user: "example"
   password: "example"
