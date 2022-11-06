@@ -18,26 +18,8 @@ spec:
     spec:
 
       volumes:
-
-        - name: "html"
-          hostPath:
-            path: /data/volumes/
-
-        - name: "plugins"
-          emptyDir: {}
-
-        - name: "themes"
-          emptyDir: {}
-
-        {{ range $key, $value := .Values.files }}
-        - name: {{ $key }}
-          configMap:
-            name: {{ include "wordpress.fullname" $glob }}-files
-            defaultMode: {{ default "0444" $value.filemode }}
-            items:
-              - key: {{ $key }}
-                path: {{ $key }}
-        {{ end }}
+        {{- include "volumes" $glob }}
+        {{- include "volumes.files" $glob }}
 
       hostAliases:
         - ip: "127.0.0.1"
@@ -141,15 +123,17 @@ spec:
             - |
               set -eux
               /scripts/wait-for-entrypoint.sh -t 30 {{ .Values.web.url }}/wp-admin/install.php
-              {{- range .Values.wordpress_start }}
-                {{.}}
-              {{- end }}
               if ! wp core is-installed;
               then
-              {{- range .Values.wordpress_init }}
+              echo "Executing wordpress_install scripts"
+              {{- range .Values.wordpress_install }}
                 {{.}}
               {{- end}}
               fi
+              echo "Executing wordpress_start scripts"
+              {{- range .Values.wordpress_start }}
+                {{.}}
+              {{- end }}
               {{ range .Values.plugins }} wp plugin install --activate {{.}} &&
               {{- end }} sleep infinity
 

@@ -1,3 +1,25 @@
+{{- define "volumes" }}
+        {{ range $key, $value := .Values.volumes }}
+        {{- $volumes := list }}
+        {{- $volume := set $value "name" $key }}
+        {{- $volumes = append $volumes $volume }}
+          {{- toYaml $volumes | nindent 8 }}
+        {{ end }}
+{{- end}}
+
+{{- define "volumes.files" }}
+        {{- $glob := . }}
+        {{- range $key, $value := .Values.files }}
+        - name: {{ $key }}
+          configMap:
+            name: {{ include "wordpress.fullname" $glob }}-files
+            defaultMode: {{ default "0444" $value.filemode }}
+            items:
+              - key: {{ $key }}
+                path: {{ $key }}
+        {{ end }}
+{{- end}}
+
 {{- define "file.volumes" }}
             {{- range $key, $value := .Values.files }}
             {{- $file := . }}

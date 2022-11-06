@@ -14,7 +14,8 @@ plugins:
 themes:
 
 # scripts executed only if WordPress is not installed
-wordpress_init:
+wordpress_install:
+  - /scripts/wordpress-install.sh
   - wp plugin delete hello || true
   - wp plugin delete akismet || true
   - wp theme delete twentynineteen || true
@@ -24,7 +25,19 @@ wordpress_init:
 
 # scripts executed each time Pod is started
 wordpress_start:
-  - /scripts/wordpress-install.sh
+  - /scripts/wordpress-url.sh
+
+volumes:
+
+  html:
+    hostPath:
+      path: /data/volumes/
+
+  plugins:
+    emptyDir: {}
+
+  themes:
+    emptyDir: {}
 
 database:
   user: "example"
@@ -113,6 +126,19 @@ files:
       binlog_cache_size=4K
       binlog_stmt_cache_size=4K
 
+  wp-change-url:
+    filemode: "0555"
+    containers:
+      cli:
+        - mountPath: /scripts/wordpress-url.sh
+    content: |
+      #!/bin/bash
+      CURRENT_DOMAIN=$(wp option get siteurl)
+
+      if ! [[ ${CURRENT_DOMAIN} == "${WORDPRESS_URL}" ]]; then
+          echo "Replacing ${CURRENT_DOMAIN} with ${WORDPRESS_URL} in database..."
+          wp search-replace "${CURRENT_DOMAIN}" "${WORDPRESS_URL}"
+      fi
 
   wp-install:
     filemode: "0555"
@@ -140,14 +166,6 @@ files:
               --admin_email=${WORDPRESS_EMAIL} \
               --skip-email
       fi
-
-      CURRENT_DOMAIN=$(wp option get siteurl)
-
-      if ! [[ ${CURRENT_DOMAIN} == "${WORDPRESS_URL}" ]]; then
-          echo "Replacing ${CURRENT_DOMAIN} with ${WORDPRESS_URL} in database..."
-          wp search-replace "${CURRENT_DOMAIN}" "${WORDPRESS_URL}"
-      fi
-
       echo "Visit $(wp option get siteurl)/wp-login.php"
 
 
