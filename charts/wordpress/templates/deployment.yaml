@@ -47,7 +47,7 @@ spec:
       {{/*  ▒█▀▀█ ▀█▀ ▀▀█▀▀ ▒█▀▀█ ▒█░░░ ▒█▀▀▀█ ▒█▄░▒█ ▒█▀▀▀ ▒█▀▀█*/}}
       {{/*  ▒█░▄▄ ▒█░ ░▒█░░ ▒█░░░ ▒█░░░ ▒█░░▒█ ▒█▒█▒█ ▒█▀▀▀ ▒█▄▄▀*/}}
       {{/*  ▒█▄▄█ ▄█▄ ░▒█░░ ▒█▄▄█ ▒█▄▄█ ▒█▄▄▄█ ▒█░░▀█ ▒█▄▄▄ ▒█░▒█*/}}
-        - name: gitcloner-themes
+        - name: gitcloner
           image: bukowa/test:gitcloner
           securityContext:
             runAsGroup: 1588

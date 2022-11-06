@@ -1,3 +1,7 @@
+{{- define "metadata.name.configmap.scripts" }}
+{{- include "wordpress.fullname" . }}-files
+{{- end}}
+
 {{- define "volumes" }}
         {{ range $key, $value := .Values.volumes }}
         {{- $volumes := list }}
@@ -12,7 +16,7 @@
         {{- range $key, $value := .Values.files }}
         - name: {{ $key }}
           configMap:
-            name: {{ include "wordpress.fullname" $glob }}-files
+            name: {{ include "metadata.name.configmap.scripts" $glob }}
             defaultMode: {{ default "0444" $value.filemode }}
             items:
               - key: {{ $key }}
