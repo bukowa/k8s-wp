@@ -5,8 +5,6 @@ image:
 
 web:
   host: wp.doma
-  # // todo change
-  url: http://wp.doma
 
 plugins:
   - woocommerce

@@ -112,22 +112,25 @@ spec:
             - -c
             - |
               set -eux
-              /scripts/wait-for-entrypoint.sh -t 30 {{ .Values.web.url }}/wp-admin/install.php
+              /scripts/wait-for-entrypoint.sh -t 30 {{ include "wordpress.url" . -}}/wp-admin/install.php
               if ! wp core is-installed;
               then
               echo "Executing wordpress_install scripts"
               {{- range .Values.wordpress_install }}
                 {{.}}
               {{- end}}
+              {{- range .Values.plugins }}
+                wp plugin install --activate {{.}}
+              {{- end}}
+              {{- range .Values.themes }}
+                wp theme install --activate {{.}}
+              {{- end }}
               fi
               echo "Executing wordpress_start scripts"
               {{- range .Values.wordpress_start }}
                 {{.}}
               {{- end }}
-              {{ range .Values.plugins }} wp plugin install --activate {{.}} &&
-              {{- end}}
-              {{ range .Values.themes }} wp theme install --activate {{.}} &&
-              {{- end }} sleep infinity
+              sleep infinity
 
           volumeMounts:
             {{- template "volumeMounts" (dict "Values" .Values "Container" "cli" "Context" . )}}

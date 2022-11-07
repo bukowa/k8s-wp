@@ -1,0 +1,9 @@
+web:
+  host: ${WORDPRESS_HOST}
+
+plugins:
+  - woocommerce
+  - bbpress
+
+themes:
+  - twentynineteen

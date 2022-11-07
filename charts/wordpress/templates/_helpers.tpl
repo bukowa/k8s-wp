@@ -1,3 +1,4 @@
+{{- define "wordpress.url" }}http://{{- .Values.web.host -}}{{- end}}
 {{- define "metadata.name.configmap.scripts" }}
 {{- include "wordpress.fullname" . }}-files
 {{- end}}

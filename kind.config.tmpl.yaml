@@ -16,5 +16,5 @@ nodes:
         hostPort: 443
         protocol: TCP
     extraMounts:
-      - hostPath: "/home/buk/Git/k8s-wp/data/"
+      - hostPath: "${HOSTPATH}"
         containerPath: "/data/volumes/"

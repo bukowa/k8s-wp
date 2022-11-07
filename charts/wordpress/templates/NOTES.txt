@@ -1,1 +1,1 @@
-{{ .Values.web.url }}/wp-login.php
+{{ include "wordpress.url" . }}/wp-login.php

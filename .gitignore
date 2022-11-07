@@ -3,3 +3,6 @@ ingress-nginx.values.yaml
 .idea
 data
 test
+kubeconfig.yaml
+kind.config.yaml
+values.yaml

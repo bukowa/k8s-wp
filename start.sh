@@ -1,9 +1,11 @@
 #!/bin/bash
 set -eux
+source .env
 
-mkdir -p ./data/ || true
+mkdir -p "$HOSTPATH" || true
+envsubst < kind.config.tmpl.yaml > kind.config.yaml
 
-kind create cluster --config=./config.yaml
+kind create cluster --config="${KINDCONFIG}" --kubeconfig="${KUBECONFIG}"
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/ || true
 helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ || true
