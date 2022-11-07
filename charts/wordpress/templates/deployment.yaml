@@ -54,7 +54,6 @@ spec:
           volumeMounts:
             {{ template "volumeMounts" (dict "Values" .Values "Container" "gitcloner" "Context" . )}}
             {{- template "volumeMounts.files" (dict "Values" .Values "Container" "gitcloner") }}
-
           args:
             - https://gitlab.com/bukowa/gitcloner-repotest-submodule
 
@@ -84,7 +83,7 @@ spec:
       {{/*  ▒█░▒█ ▒█▄▄█ ░▒█░░ ▒█▄▄█ ▒█▀▀▄ ▒█▄▄█ ░▀▀▀▄▄ ▒█▀▀▀*/}}
       {{/*  ▒█▄▄▀ ▒█░▒█ ░▒█░░ ▒█░▒█ ▒█▄▄█ ▒█░▒█ ▒█▄▄▄█ ▒█▄▄▄*/}}
         - name: database
-          image: {{ .Values.image.mariadb }}
+          image: {{ .Values.image.database }}
           ports:
             - containerPort: 3306
           env:
@@ -126,8 +125,9 @@ spec:
                 {{.}}
               {{- end }}
               {{ range .Values.plugins }} wp plugin install --activate {{.}} &&
+              {{- end}}
+              {{ range .Values.themes }} wp theme install --activate {{.}} &&
               {{- end }} sleep infinity
-
 
           volumeMounts:
             {{- template "volumeMounts" (dict "Values" .Values "Container" "cli" "Context" . )}}
