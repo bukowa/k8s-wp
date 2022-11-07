@@ -1,19 +1,28 @@
 image:
   wordpress: wordpress:6.0.3-php7.4-apache
-  mariadb: mariadb:10.9.3
+  database: mariadb:10.9.3
   wpcli: wordpress:cli-php7.4
 
 web:
   host: wp.doma
+  # // todo change
   url: http://wp.doma
 
 plugins:
   - woocommerce
-  - bbpress
+#  - https://github.com/tonik/theme/archive/refs/heads/develop.zip
+#  - name: woocommerce:2.0.0
+#  - name:
+#  - woocommerce:2.0.0
+#  - bbpress
+#  - git@gitlab.com:wordpress-env/gitcloner.git:/moj-plugin/super-partia
+#  - https://gitlab.com/wordpress-env/gitcloner.git:patch-1/pkg
 
 themes:
+  - twentynineteen
+#  - https://github.com/tonik/theme/archive/refs/heads/develop.zip
 
-# scripts executed only if WordPress is not installed
+# Scripts executed only if WordPress is not installed
 wordpress_install:
   - /scripts/wordpress-install.sh
   - wp plugin delete hello || true
@@ -26,6 +35,9 @@ wordpress_install:
 # scripts executed each time Pod is started
 wordpress_start:
   - /scripts/wordpress-url.sh
+
+pvc:
+  enabled: false
 
 volumes:
 
