@@ -11,7 +11,7 @@
     }
   ],
   "scripts": {
-    "plugins:activate": "for dir in wp-content/plugins/*; do wp plugin activate ${dir##*/}; done",
+    "plugins:activate": "set -eux; for dir in $(ls -d wp-content/plugins/*/); do PLUGIN=${dir::-1} PLUGIN=${PLUGIN##*/} && wp plugin activate $PLUGIN; done",
     "post-install-cmd": [
       "for dir in wp-content/plugins/*; do echo ${dir##*/}; done",
       "for dir in wp-content/themes/*; do echo ${dir##*/}; done"
