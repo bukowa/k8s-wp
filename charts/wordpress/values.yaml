@@ -9,10 +9,12 @@ web:
 script:
   - wp plugin delete hello || true
   - wp plugin delete akismet || true
-  - wp theme delete twentynineteen || true
-  - wp theme delete twentyseventeen || true
-  - wp theme delete twentysixteen || true
+  - wp theme delete twentytwenty || true
+  - wp theme delete twentytwentyone || true
+  - wp theme delete twentytwentytwo || true
+  - wp theme delete twentytwentythree || true
   - wp rewrite structure '/%category%/%postname%/'
+  - composer plugins:activate
 
 volumes:
 
