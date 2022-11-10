@@ -1,0 +1,3 @@
+*
+!entrypoint.sh
+!wait-for-entrypoint.sh
