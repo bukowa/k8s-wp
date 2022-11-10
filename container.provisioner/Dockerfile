@@ -5,4 +5,6 @@ COPY scripts /scripts
 WORKDIR /var/www/html
 ENV PATH=$PATH:/var/www/html/vendor/bin
 
-ENTRYPOINT ["/bin/bash", "-c"]
+ENV WORDPRESS_URL=http://localhost
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
