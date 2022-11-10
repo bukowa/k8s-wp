@@ -5,7 +5,7 @@ composer:
 	docker run --rm -it --volume=${PWD}:/app \
 	-u $(shell id -u):$(shell id -g) \
 	$(shell docker build -q -f .composer.Dockerfile .) \
-  	install
+  	"composer install"
 
 composer_cmd:
 		docker run --rm -it --volume=${PWD}:/app \

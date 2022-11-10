@@ -28,7 +28,6 @@
   },
   "require": {
     "php": ">=7.1",
-    "wp-cli/wp-cli-bundle": "*",
     "wpackagist-theme/disconnected": "*",
     "wpackagist-plugin/woocommerce": "7.1.0"
   },
