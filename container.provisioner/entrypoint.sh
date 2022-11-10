@@ -26,13 +26,6 @@ else
         --admin_password="${WORDPRESS_PASSWORD}" \
         --admin_email="${WORDPRESS_EMAIL}" \
         --skip-email
-    wp rewrite structure '/%category%/%postname%/'
-    wp plugin delete hello || true
-    wp plugin delete akismet || true
-    wp theme delete twentynineteen || true
-    wp theme delete twentyseventeen || true
-    wp theme delete twentysixteen || true
-
     if [[ -f "composer.json" ]]; then
       composer install
     fi

@@ -78,7 +78,7 @@ spec:
             runAsGroup: 33
             runAsUser: 33
           args:
-            - echo hello world
+            - set -eux; echo "Running Scripts" {{- range .Values.script }} && {{.}} {{- end}}
           volumeMounts:
             {{- template "volumeMounts" (dict "Values" .Values "Container" "cli" "Context" . )}}
             {{- template "volumeMounts.files" (dict "Values" .Values "Container" "cli") }}

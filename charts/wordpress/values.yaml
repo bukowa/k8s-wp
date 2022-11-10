@@ -6,6 +6,14 @@ image:
 web:
   host: wp.doma
 
+script:
+  - wp plugin delete hello || true
+  - wp plugin delete akismet || true
+  - wp theme delete twentynineteen || true
+  - wp theme delete twentyseventeen || true
+  - wp theme delete twentysixteen || true
+  - wp rewrite structure '/%category%/%postname%/'
+
 volumes:
 
   html:
