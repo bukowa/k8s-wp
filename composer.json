@@ -11,7 +11,7 @@
     }
   ],
   "scripts": {
-    "post-install-cmd": [
+    "post-update-cmd": [
       "for dir in wp-content/plugins/*; do echo ${dir##*/}; done",
       "for dir in wp-content/themes/*; do echo ${dir##*/}; done"
     ]
