@@ -6,3 +6,7 @@ test
 kubeconfig.yaml
 kind.config.yaml
 values.yaml
+wp-content
+composer.lock
+vendor
+

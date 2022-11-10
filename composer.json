@@ -1,0 +1,39 @@
+{
+  "type": "project",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org",
+      "only": [
+        "wpackagist-plugin/*",
+        "wpackagist-theme/*"
+      ]
+    }
+  ],
+  "scripts": {
+    "post-install-cmd": [
+      "for dir in wp-content/plugins/*; do echo ${dir##*/}; done",
+      "for dir in wp-content/themes/*; do echo ${dir##*/}; done"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "wpackagist-theme/disconnected": "*",
+    "wpackagist-plugin/woocommerce": "7.1.0"
+  },
+  "extra": {
+    "installer-paths": {
+      "wp-content/plugins/{$name}/": [
+        "type:wordpress-plugin"
+      ],
+      "wp-content/themes/{$name}/": [
+        "type:wordpress-theme"
+      ]
+    }
+  }
+}
