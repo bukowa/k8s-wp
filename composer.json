@@ -1,5 +1,5 @@
 {
-  "type": "project",
+  "name": "bukowa/k8s-wp",
   "repositories": [
     {
       "type": "composer",
