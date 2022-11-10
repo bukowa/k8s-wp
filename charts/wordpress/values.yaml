@@ -9,8 +9,7 @@ web:
 volumes:
 
   html:
-    hostPath:
-      path: /data/volumes/
+    emptyDir: {}
 
   plugins:
     emptyDir: {}
