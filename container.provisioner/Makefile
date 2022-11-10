@@ -12,3 +12,7 @@ composer_cmd:
     	-u $(shell id -u):$(shell id -g) \
     	--entrypoint=/bin/bash \
     	$(shell docker build -q -f Dockerfile .)
+
+push:
+	docker tag $(shell docker build -q -f Dockerfile .) bukowa/test:provisioner
+	docker push bukowa/test:provisioner
