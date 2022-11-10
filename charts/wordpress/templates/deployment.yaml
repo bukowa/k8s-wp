@@ -27,36 +27,6 @@ spec:
             - wordpress
             - {{.Values.web.host}}
 
-      initContainers:
-
-      {{/*  ▒█▀▀█ ▒█░▒█ ▒█▀▀▀█ ▒█░░▒█ ▒█▄░▒█ ▒█▀▀█ ▒█▀▀▀ ▒█▀▀█ ▒█▀▀▀█ ▒█▀▀▀█*/}}
-      {{/*  ▒█░░░ ▒█▀▀█ ▒█░░▒█ ▒█▒█▒█ ▒█▒█▒█ ▒█▄▄▀ ▒█▀▀▀ ▒█▄▄█ ▒█░░▒█ ░▀▀▀▄▄*/}}
-      {{/*  ▒█▄▄█ ▒█░▒█ ▒█▄▄▄█ ▒█▄▀▄█ ▒█░░▀█ ▒█░▒█ ▒█▄▄▄ ▒█░░░ ▒█▄▄▄█ ▒█▄▄▄█*/}}
-        - name: chownrepos
-          image: busybox
-          command: [ "/bin/sh", "-c"]
-          args:
-            - set -eux && chown -R 1588:1588 /repos/themes /repos/plugins
-          volumeMounts:
-            {{ template "volumeMounts" (dict "Values" .Values "Container" "chownrepos" "Context" . )}}
-            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "chownrepos") }}
-
-
-      {{/*  ▒█▀▀█ ▀█▀ ▀▀█▀▀ ▒█▀▀█ ▒█░░░ ▒█▀▀▀█ ▒█▄░▒█ ▒█▀▀▀ ▒█▀▀█*/}}
-      {{/*  ▒█░▄▄ ▒█░ ░▒█░░ ▒█░░░ ▒█░░░ ▒█░░▒█ ▒█▒█▒█ ▒█▀▀▀ ▒█▄▄▀*/}}
-      {{/*  ▒█▄▄█ ▄█▄ ░▒█░░ ▒█▄▄█ ▒█▄▄█ ▒█▄▄▄█ ▒█░░▀█ ▒█▄▄▄ ▒█░▒█*/}}
-        - name: gitcloner
-          image: bukowa/test:gitcloner
-          securityContext:
-            runAsGroup: 1588
-            runAsUser: 1588
-          imagePullPolicy: Always
-          volumeMounts:
-            {{ template "volumeMounts" (dict "Values" .Values "Container" "gitcloner" "Context" . )}}
-            {{- template "volumeMounts.files" (dict "Values" .Values "Container" "gitcloner") }}
-          args:
-            - https://gitlab.com/bukowa/gitcloner-repotest-submodule
-
       containers:
       {{/*  ░█──░█ ░█▀▀▀█ ░█▀▀█ ░█▀▀▄ ░█▀▀█ ░█▀▀█ ░█▀▀▀ ░█▀▀▀█ ░█▀▀▀█*/}}
       {{/*  ░█░█░█ ░█──░█ ░█▄▄▀ ░█─░█ ░█▄▄█ ░█▄▄▀ ░█▀▀▀ ─▀▀▀▄▄ ─▀▀▀▄▄*/}}
@@ -102,36 +72,13 @@ spec:
       {{/*  ▒█▒█▒█ ▒█▄▄█ ▒█░░░ ▒█░░░ ▒█░*/}}
       {{/*  ▒█▄▀▄█ ▒█░░░ ▒█▄▄█ ▒█▄▄█ ▄█▄*/}}
         - name: cli
-          image: wordpress:cli-php7.4
+          image: {{ .Values.image.wpcli }}
           imagePullPolicy: Always
           securityContext:
             runAsGroup: 33
             runAsUser: 33
-          command:
-            - /bin/bash
-            - -c
-            - |
-              set -eux
-              /scripts/wait-for-entrypoint.sh -t 30 {{ include "wordpress.url" . -}}/wp-admin/install.php
-              if ! wp core is-installed;
-              then
-              echo "Executing wordpress_install scripts"
-              {{- range .Values.wordpress_install }}
-                {{.}}
-              {{- end}}
-              {{- range .Values.plugins }}
-                wp plugin install --activate {{.}}
-              {{- end}}
-              {{- range .Values.themes }}
-                wp theme install --activate {{.}}
-              {{- end }}
-              fi
-              echo "Executing wordpress_start scripts"
-              {{- range .Values.wordpress_start }}
-                {{.}}
-              {{- end }}
-              sleep infinity
-
+          args:
+            - echo hello world
           volumeMounts:
             {{- template "volumeMounts" (dict "Values" .Values "Container" "cli" "Context" . )}}
             {{- template "volumeMounts.files" (dict "Values" .Values "Container" "cli") }}
