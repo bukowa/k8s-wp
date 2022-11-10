@@ -11,6 +11,11 @@
     }
   ],
   "scripts": {
+    "plugins:activate": "for dir in wp-content/plugins/*; do wp plugin activate ${dir##*/}; done",
+    "post-install-cmd": [
+      "for dir in wp-content/plugins/*; do echo ${dir##*/}; done",
+      "for dir in wp-content/themes/*; do echo ${dir##*/}; done"
+    ],
     "post-update-cmd": [
       "for dir in wp-content/plugins/*; do echo ${dir##*/}; done",
       "for dir in wp-content/themes/*; do echo ${dir##*/}; done"
@@ -23,6 +28,7 @@
   },
   "require": {
     "php": ">=7.1",
+    "wp-cli/wp-cli-bundle": "*",
     "wpackagist-theme/disconnected": "*",
     "wpackagist-plugin/woocommerce": "7.1.0"
   },
