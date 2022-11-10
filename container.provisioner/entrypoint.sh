@@ -14,6 +14,9 @@ declare -p WORDPRESS_EMAIL >/dev/null
 if wp core is-installed;
 then
     echo "Wordpress is already installed..."
+    if [[ -f "composer.json" ]]; then
+      composer update
+    fi
 else
     echo "Installing wordpress on ${WORDPRESS_URL}..."
     wp core install \
@@ -29,6 +32,10 @@ else
     wp theme delete twentynineteen || true
     wp theme delete twentyseventeen || true
     wp theme delete twentysixteen || true
+
+    if [[ -f "composer.json" ]]; then
+      composer install
+    fi
 
     echo "Wordpress install success"
 fi

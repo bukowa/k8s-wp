@@ -129,6 +129,16 @@ files:
       binlog_cache_size=4K
       binlog_stmt_cache_size=4K
 
+  composer-json:
+    filemode: "0444"
+    containers:
+      cli:
+        - mountPath: /var/www/html/composer.json
+    content: |
+      {
+        "name": "bukowa/k8s-wp"
+      }
+
 ftp:
   enabled: false
   login: test

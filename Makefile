@@ -2,11 +2,16 @@ export KUBECONFIG:=$(shell pwd)/dev/kubeconfig.yaml
 
 .PHONY: run build all
 
-all: build run
+all: build run del rundel
 
 build:
 	make -C ./container.provisioner push
 
 run:
-	helm uninstall wp
-	helm install wp ./charts/wordpress
+	helm uninstall wp || true
+	helm install wp --set-file=files.composer-json.content=./container.provisioner/composer.json ./charts/wordpress
+
+del:
+	sudo rm -fr ./dev/data/wp-wordpress
+
+rundel: run del
