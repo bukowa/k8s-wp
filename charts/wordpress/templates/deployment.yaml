@@ -74,6 +74,14 @@ spec:
         - name: cli
           image: {{ .Values.image.wpcli }}
           imagePullPolicy: Always
+          ports:
+            - containerPort: 8999
+          readinessProbe:
+            initialDelaySeconds: 3
+            periodSeconds: 1
+            httpGet:
+              port: 8999
+              path: /ready
           securityContext:
             runAsGroup: 33
             runAsUser: 33

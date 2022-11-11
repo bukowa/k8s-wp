@@ -8,4 +8,5 @@ ENV WORDPRESS_URL=http://localhost
 COPY wait-for-entrypoint.sh /
 COPY entrypoint.sh /
 
+EXPOSE 8999
 ENTRYPOINT ["/entrypoint.sh"]
