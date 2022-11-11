@@ -1,6 +1,6 @@
 export KUBECONFIG:=$(shell pwd)/dev/kubeconfig.yaml
 
-.PHONY: run build all
+.PHONY: run build all rundel rundel-test
 
 all: build run del rundel
 
@@ -18,3 +18,6 @@ del:
 	sudo rm -fr ./dev/data/wp-wordpress
 
 rundel: del run
+
+rundel-test: rundel
+	cd ./tests && make test

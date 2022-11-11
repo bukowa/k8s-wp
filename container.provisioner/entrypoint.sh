@@ -48,4 +48,4 @@ fi
 eval "$@"
 
 echo "OK" > ./readiness/ready
-php -S 0.0.0.0:8999 -t ./readiness/
+php -S 0.0.0.0:8999 -t ./readiness/ > /dev/null 2>&1
