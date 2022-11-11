@@ -17,7 +17,7 @@ spec:
     spec:
 
       volumes:
-        {{- include "volumes" . }}
+        {{- include "volumes" (dict "Values" .Values "Context" . ) }}
         {{- include "volumes.files" . }}
 
       hostAliases:
@@ -100,7 +100,7 @@ spec:
             - containerPort: 22
               name: "sftp"
           volumeMounts:
-            {{- template "volumeMounts" (dict "Values" .Values "Container" "sftp" "Context" . )}}
+            {{ template "volumeMounts" (dict "Values" .Values "Container" "sftp" "Context" . )}}
             {{- template "volumeMounts.files" (dict "Values" .Values "Container" "sftp") }}
           args:
             - {{.Values.ftp.login}}:{{.Values.ftp.password}}:33

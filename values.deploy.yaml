@@ -1,10 +1,3 @@
-
-volumes:
-  html:
-    emptyDir: null
-    hostPath:
-      path: /data/volumes/
-
 script:
   - wp plugin delete hello || true
   - wp plugin delete akismet || true
@@ -14,3 +7,19 @@ script:
   - wp theme delete twentytwentythree || true
   - wp rewrite structure '/%category%/%postname%/'
   - composer plugins:activate
+
+web:
+  host: test.wp.devit.ovh
+
+ftp:
+  enabled: true
+
+pvc:
+  enabled: true
+
+volumes:
+  html:
+    hostPath: null
+    emptyDir: null
+    persistentVolumeClaim:
+      claimName: '{{ include "wordpress.fullname" . }}'
