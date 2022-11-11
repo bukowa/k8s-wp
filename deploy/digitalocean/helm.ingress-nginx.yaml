@@ -1,0 +1,8 @@
+# https://github.com/digitalocean/digitalocean-cloud-controller-manager/blob/master/docs/controllers/services/examples/README.md#accessing-pods-over-a-managed-load-balancer-from-inside-the-cluster
+controller:
+  service:
+    annotations:
+      service.beta.kubernetes.io/do-loadbalancer-hostname: "loadbalancer.config.wp.devit.ovh"
+      service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+  config:
+    use-proxy-protocol: true

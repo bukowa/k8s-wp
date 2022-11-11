@@ -16,6 +16,7 @@ kind: Ingress
 metadata:
   name: {{ include "wordpress.fullname" . }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
     - host: {{ .Values.web.host }}
       http:
@@ -27,3 +28,17 @@ spec:
                 name: {{ include "wordpress.fullname" . }}
             pathType: Prefix
             path: /
+---
+{{ if .Values.ftp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "wordpress.fullname" . }}-ftp
+spec:
+  type: NodePort
+  ports:
+    - port: 22
+      targetPort: 22
+  selector:
+    app: {{ include "wordpress.fullname" . }}
+{{- end}}
