@@ -1,5 +1,4 @@
 ./data
-ingress-nginx.values.yaml
 .idea
 data
 test
