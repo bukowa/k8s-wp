@@ -19,6 +19,9 @@ script:
   - wp rewrite structure '/%category%/%postname%/'
   - composer plugins:activate
 
+pvc:
+  enabled: false
+
 volumes:
 
   html:

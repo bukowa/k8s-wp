@@ -13,3 +13,13 @@ web:
 
 ftp:
   enabled: true
+
+pvc:
+  enabled: true
+
+volumes:
+  html:
+    hostPath: null
+    emptyDir: null
+    persistentVolumeClaim:
+      claimName: '{{ include "wordpress.fullname" . }}'

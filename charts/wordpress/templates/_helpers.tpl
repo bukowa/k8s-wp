@@ -8,7 +8,7 @@
         {{- $volumes := list }}
         {{- $volume := set $value "name" $key }}
         {{- $volumes = append $volumes $volume }}
-          {{- toYaml $volumes | nindent 8 }}
+            {{- tpl (toYaml $volumes ) $.Context | nindent 8}}
         {{ end }}
 {{- end}}
 
