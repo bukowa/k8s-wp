@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eux
 
+mkdir -p ./readiness || true
+if [[ -f "./readiness/ready" ]]; then
+  rm "./readiness/ready"
+fi
+
 wp cli info
 
 /wait-for-entrypoint.sh -t 30 "${WORDPRESS_URL}/wp-admin/install.php"
@@ -41,4 +46,6 @@ if ! [[ ${CURRENT_DOMAIN} == "${WORDPRESS_URL}" ]]; then
 fi
 
 eval "$@"
-sleep infinity
+
+echo "OK" > ./readiness/ready
+php -S 0.0.0.0:8999 -t ./readiness/

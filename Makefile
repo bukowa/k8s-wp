@@ -10,7 +10,8 @@ build:
 run:
 	helm uninstall wp || true
 	helm install wp --set-file=files.composer-json.content=./container.provisioner/composer.json \
-	--values values.yaml \
+	--values values.dev.yaml \
+	--wait \
 	./charts/wordpress
 
 del:
